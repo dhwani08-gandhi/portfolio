@@ -17,45 +17,144 @@
 
     <script>
         // 1. Replace this with your "Publish to Web" CSV link from Google Sheets
-        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
+  const IC = {
+  'Finance':        {bg:'#1A5C3A',lt:'#E8F5EE',tx:'#1A5C3A',ic:'💰'},
+  'HR':             {bg:'#7C3AED',lt:'#F3EEFF',tx:'#7C3AED',ic:'👥'},
+  'Supply Chain':   {bg:'#B45309',lt:'#FEF3E2',tx:'#B45309',ic:'🚛'},
+  'Share Market':   {bg:'#1D4ED8',lt:'#EFF4FF',tx:'#1D4ED8',ic:'📈'},
+  'Sales':          {bg:'#BE185D',lt:'#FDF0F6',tx:'#BE185D',ic:'🛒'},
+  'Operations':     {bg:'#0F766E',lt:'#EDFAF8',tx:'#0F766E',ic:'⚙️'},
+  'Procurement':    {bg:'#92400E',lt:'#FEF3E2',tx:'#92400E',ic:'📦'},
+  'Reconciliation': {bg:'#374151',lt:'#F3F4F6',tx:'#374151',ic:'🔁'},
+};
 
-        async function loadDashboards() {
+// 1. PASTE YOUR GOOGLE SHEETS CSV LINK HERE
+
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
+let DATA = [];
+let AF = 'All';
+
+// NEW: Function to fetch data from Google Sheets
+async function loadDataFromSheet() {
+    try {
         const response = await fetch(sheetUrl);
         const csvData = await response.text();
-        const rows = csvData.split('\n').slice(1);
-        const grid = document.getElementById('portfolio-grid');
+        const rows = csvData.split('\n').slice(1); // Skip Header
 
-        grid.innerHTML = rows.map(row => {
-            // Split by comma, but handle potential commas inside quotes
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
-            if (cols.length < 6) return '';
+        DATA = rows.map(row => {
+            // Regex handles commas inside descriptions
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols.length < 6) return null;
 
-            const [title, industry, desc, features, dashUrl, imgPath] = cols.map(c => c.replace(/"/g, '').trim());
+            return {
+                title: cols[0].replace(/"/g, '').trim(),
+                industry: cols[1].replace(/"/g, '').trim(),
+                description: cols[2].replace(/"/g, '').trim(),
+                // Expecting "Feature 1 | Feature 2" in Sheet
+                features: cols[3].replace(/"/g, '').split('|').map(f => f.trim()),
+                dashboardUrl: cols[4].replace(/"/g, '').trim(),
+                imageUrl: cols[5].replace(/"/g, '').trim()
+            };
+        }).filter(p => p !== null);
 
-            // Turn "Power BI | DAX" into individual <span> tags
-            const featureTags = features.split('|').map(f => `<span>${f.trim()}</span>`).join('');
-
-            return `
-                <div class="portfolio-card">
-                    <div class="card-header">
-                        <span class="industry-badge">${industry}</span>
-                        <div class="image-container">
-                            <img src="${imgPath}" alt="${title}">
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>${title}</h3>
-                        <p class="description">${desc}</p>
-                        <div class="feature-tags">${featureTags}</div>
-                        <hr>
-                        <a href="${dashUrl}" target="_blank" class="view-link">View Details &rarr;</a>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        refresh();
+    } catch (error) {
+        console.error("Error loading sheet:", error);
     }
-    loadDashboards();
-    </script>
+}
+
+function gc(ind) {
+  for (const [k, v] of Object.entries(IC)) 
+    if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
+  return {bg:'#1E6FFF',lt:'#EEF3FF',tx:'#1E6FFF',ic:'📊'};
+}
+
+function buildFilters() {
+  const bar = document.querySelector('.filters-bar');
+  bar.querySelectorAll('.fb:not(:first-child)').forEach(b => b.remove());
+  [...new Set(DATA.map(p => p.industry))].forEach(ind => {
+    const b = document.createElement('button');
+    b.className = 'fb'; b.textContent = ind;
+    b.onclick = () => filter(ind, b); bar.appendChild(b);
+  });
+}
+
+function filter(v, btn) {
+  AF = v;
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
+}
+
+function render(list) {
+  document.getElementById('ct').textContent = DATA.length;
+  document.getElementById('cs').textContent = list.length;
+  const g = document.getElementById('grid');
+  if (!list.length) {
+    g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:var(--muted)">No projects found.</div>';
+    return;
+  }
+  g.innerHTML = list.map((p, i) => {
+    const ri = DATA.indexOf(p), c = gc(p.industry);
+    const hi = p.imageUrl && p.imageUrl.trim() !== '';
+    const img = hi 
+      ? `<img src="${p.imageUrl}" onerror="this.classList.add('err');this.nextElementSibling.style.display='flex'"><div class="placeholder" style="display:none">${c.ic}</div>`
+      : `<div class="placeholder">${c.ic}</div>`;
+    
+    return `<div class="card" style="animation-delay:${i * .06}s" onclick="openMod(${ri})">
+      <div class="card-img" style="background:${c.bg}22">${img}<span class="pill" style="background:${c.bg}">${p.industry}</span></div>
+      <div class="card-body">
+        <div class="card-title">${p.title}</div>
+        <div class="card-desc">${p.description}</div>
+      </div>
+      <div class="card-footer">
+        <button class="vbtn">View Details <span class="arr">→</span></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openMod(i) {
+  const p = DATA[i], c = gc(p.industry);
+  const hi = p.imageUrl && p.imageUrl.trim() !== '';
+  
+  document.getElementById('mimg').innerHTML = hi 
+    ? `<img class="mimg" src="${p.imageUrl}" onerror="this.style.display='none'">` 
+    : `<div class="mph" style="background:${c.lt}">${c.ic}</div>`;
+    
+  document.getElementById('mtitle').textContent = p.title;
+  document.getElementById('mdesc').textContent = p.description;
+  document.getElementById('mfeats').innerHTML = p.features.map(f => `<li><span style="color:${c.tx};font-weight:700;margin-right:6px">✓</span>${f}</li>`).join('');
+  
+  // Link the "Tools" area to the Dashboard URL from your sheet
+  document.getElementById('mtools').innerHTML = `
+    <a href="${p.dashboardUrl}" target="_blank" style="text-decoration:none; background:${c.bg}; color:white; padding:10px 20px; border-radius:12px; font-weight:600; font-size:0.8rem;">
+        Open Live Dashboard ↗
+    </a>
+  `;
+
+  document.getElementById('ov').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function refresh() { 
+    buildFilters(); 
+    render(AF === 'All' ? DATA : DATA.filter(p => p.industry === AF)); 
+}
+
+function closeMod(e) {
+  if (e && e.type === 'click' && e.target.id !== 'ov') return;
+  document.getElementById('ov').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Initial Load
+loadDataFromSheet();
+
+// Close on Escape key
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeMod(); } });
+</script>
 
 </body>
 </html>
+
