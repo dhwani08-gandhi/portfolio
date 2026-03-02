@@ -1,155 +1,166 @@
-/* GLOBAL STYLES */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8fafc;
-    margin: 0;
-    padding: 40px 20px;
-    color: #334155;
+/* 1. RESET & FONTS */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #F7F6F3;
+    --white: #fff;
+    --text: #1A1A1A;
+    --muted: #6B6B6B;
+    --border: #E5E3DE;
+    --accent: #1E6FFF; /* The blue from your template */
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 20px;
+}
+
+/* 2. HEADER STYLES */
+.container { max-width: 1200px; margin: 0 auto; }
+
+.eyebrow {
+    text-align: center;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
 }
 
 .title {
+    font-family: 'Playfair Display', serif;
     text-align: center;
     font-size: 2.5rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 50px;
+    margin-bottom: 48px;
 }
 
-/* THE GRID SYSTEM */
+/* 3. THE 3-COLUMN GRID */
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 Columns */
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
 }
 
-/* THE PREMIUM CARD */
+/* 4. THE PREMIUM CARD */
 .portfolio-card {
-    background: white;
-    border-radius: 24px;
+    background: var(--white);
+    border-radius: 18px;
+    border: 1px solid var(--border);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     text-decoration: none;
     color: inherit;
-    transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform .22s, box-shadow .22s;
+    cursor: pointer;
 }
 
 .portfolio-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 48px rgba(0,0,0,.09);
 }
 
-/* THE GREY HEADER AREA */
+/* GREY HEADER AREA (From your requested output) */
 .card-header {
-    background-color: #f1f5f9; /* Light grey background */
-    height: 220px;
+    background-color: #f1f5f9; 
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 30px;
+    padding: 20px;
 }
 
 .industry-badge {
     position: absolute;
-    top: 15px;
-    left: 15px;
-    background: #2563eb; /* Professional Blue */
+    top: 14px; left: 14px;
+    background: var(--accent);
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: .68rem;
+    font-weight: 700;
 }
 
 .image-container img {
-    max-width: 100%;
-    max-height: 160px;
-    object-fit: contain; /* Prevents icons from stretching */
-    pointer-events: none;
+    max-width: 80%;
+    max-height: 140px;
+    object-fit: contain;
+    transition: transform .35s;
 }
 
-/* TEXT AREA */
+.portfolio-card:hover .image-container img { transform: scale(1.05); }
+
+/* 5. TEXT AREA (Body) */
 .portfolio-info {
-    padding: 24px;
+    padding: 20px 20px 14px;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
 }
 
 .portfolio-info h3 {
-    margin: 0 0 12px 0;
-    font-size: 1.25rem;
-    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
 .description {
-    font-size: 0.9rem;
-    color: #64748b;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    /* Limit to 3 lines of text */
+    font-size: .82rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 12px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* THE BUBBLES (TAGS) */
+/* 6. BUBBLES / TAGS */
 .feature-tags {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-
-.feature-tags span {
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    color: #475569;
-    padding: 3px 10px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-/* THE LINK STYLE */
-hr {
-    border: 0;
-    border-top: 1px solid #f1f5f9;
-    margin-top: auto;
     margin-bottom: 15px;
 }
 
-.view-link {
-    color: #2563eb;
+.feature-tags span {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: .68rem;
     font-weight: 600;
-    font-size: 0.9rem;
+    background: var(--bg);
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+
+/* 7. CARD FOOTER */
+hr { border: 0; border-top: 1px solid var(--border); margin: 0 0 12px 0; }
+
+.view-link {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--accent);
     display: flex;
     align-items: center;
+    gap: 4px;
 }
 
-/* MOBILE RESPONSIVE */
-@media (max-width: 1024px) {
-    .portfolio-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 Columns for tablets */
-    }
+/* 8. MODAL (Popup) STYLES */
+.ov { /* Same as your template */
+    display:none; position:fixed; inset:0; z-index:999;
+    background:rgba(15,15,15,.55); backdrop-filter:blur(8px);
+    align-items:center; justify-content:center; padding:20px;
+}
+.ov.open { display:flex; }
+.modal {
+    background:var(--white); border-radius:22px; width:100%;
+    max-width:640px; max-height:90vh; overflow-y:auto; padding:28px;
 }
 
-@media (max-width: 640px) {
-    .portfolio-grid {
-        grid-template-columns: 1fr; /* 1 Column for phones */
-    }
-    .title {
-        font-size: 1.8rem;
-    }
-}
+/* 9. RESPONSIVE */
+@media(max-width:960px){ .portfolio-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:600px){ .portfolio-grid { grid-template-columns: 1fr; } }
