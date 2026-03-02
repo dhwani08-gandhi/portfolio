@@ -9,7 +9,7 @@
 <body>
 
     <div class="container">
-        <h1 class="title">Data Analytics Portfolio</h1>
+        <h1 class="title">JHS Portfolio</h1>
         
         <div class="portfolio-grid" id="portfolio-grid">
             </div>
@@ -20,43 +20,41 @@
         const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
 
         async function loadDashboards() {
-            try {
-                const response = await fetch(sheetUrl);
-                const csvData = await response.text();
-                
-                // Split the Excel rows
-                const rows = csvData.split('\n').slice(1);
-                const grid = document.getElementById('portfolio-grid');
+        const response = await fetch(sheetUrl);
+        const csvData = await response.text();
+        const rows = csvData.split('\n').slice(1);
+        const grid = document.getElementById('portfolio-grid');
 
-                grid.innerHTML = rows.map(row => {
-                    // Splits the row into: Name, Description, DashboardURL, ImageURL
-                    const cols = row.split(','); 
-                    if (cols.length < 4) return ''; 
+        grid.innerHTML = rows.map(row => {
+            // Split by comma, but handle potential commas inside quotes
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
+            if (cols.length < 6) return '';
 
-                    const name = cols[0].trim();
-                    const desc = cols[1].trim();
-                    const dashUrl = cols[2].trim();
-                    const imgPath = cols[3].trim(); // e.g., images/mro.jpeg
+            const [title, industry, desc, features, dashUrl, imgPath] = cols.map(c => c.replace(/"/g, '').trim());
 
-                    return `
-                        <a href="${dashUrl}" target="_blank" class="portfolio-card">
-                            <div class="image-wrapper">
-                                <img src="${imgPath}" alt="${name}">
-                            </div>
-                            <div class="portfolio-info">
-                                <h3>${name}</h3>
-                                <p>${desc}</p>
-                            </div>
-                        </a>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error("Error loading the sheet:", error);
-            }
-        }
+            // Turn "Power BI | DAX" into individual <span> tags
+            const featureTags = features.split('|').map(f => `<span>${f.trim()}</span>`).join('');
 
-        // Run the function as soon as the page opens
-        loadDashboards();
+            return `
+                <div class="portfolio-card">
+                    <div class="card-header">
+                        <span class="industry-badge">${industry}</span>
+                        <div class="image-container">
+                            <img src="${imgPath}" alt="${title}">
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>${title}</h3>
+                        <p class="description">${desc}</p>
+                        <div class="feature-tags">${featureTags}</div>
+                        <hr>
+                        <a href="${dashUrl}" target="_blank" class="view-link">View Details &rarr;</a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    loadDashboards();
     </script>
 
 </body>
