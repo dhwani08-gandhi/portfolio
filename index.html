@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">Data Analytics Portfolio</h1>
+        
+        <div class="portfolio-grid" id="portfolio-grid">
+            </div>
+    </div>
+
+    <script>
+        // 1. Replace this with your "Publish to Web" CSV link from Google Sheets
+        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
+
+        async function loadDashboards() {
+            try {
+                const response = await fetch(sheetUrl);
+                const csvData = await response.text();
+                
+                // Split the Excel rows
+                const rows = csvData.split('\n').slice(1);
+                const grid = document.getElementById('portfolio-grid');
+
+                grid.innerHTML = rows.map(row => {
+                    // Splits the row into: Name, Description, DashboardURL, ImageURL
+                    const cols = row.split(','); 
+                    if (cols.length < 4) return ''; 
+
+                    const name = cols[0].trim();
+                    const desc = cols[1].trim();
+                    const dashUrl = cols[2].trim();
+                    const imgPath = cols[3].trim(); // e.g., images/mro.jpeg
+
+                    return `
+                        <a href="${dashUrl}" target="_blank" class="portfolio-card">
+                            <div class="image-wrapper">
+                                <img src="${imgPath}" alt="${name}">
+                            </div>
+                            <div class="portfolio-info">
+                                <h3>${name}</h3>
+                                <p>${desc}</p>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error("Error loading the sheet:", error);
+            }
+        }
+
+        // Run the function as soon as the page opens
+        loadDashboards();
+    </script>
+
+</body>
+</html>

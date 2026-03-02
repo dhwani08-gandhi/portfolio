@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+/* THE 3-COLUMN GRID */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Exactly 3 columns */
+    gap: 30px;
+}
+
+/* THE CARD BUTTON */
+.portfolio-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none; /* Removes blue underline */
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.portfolio-card:hover {
+    transform: translateY(-5px); /* Gentle lift on hover */
+}
+
+.image-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Keeps images from stretching */
+    pointer-events: none; /* PREVENTS THE HOVER TEXT */
+}
+
+.portfolio-info {
+    padding: 20px;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.portfolio-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+}
+
+/* MOBILE RESPONSIVE: Stack to 1 column on phones */
+@media (max-width: 768px) {
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+    }
+}
