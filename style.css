@@ -1,8 +1,10 @@
+/* GLOBAL STYLES */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8fafc;
     margin: 0;
     padding: 40px 20px;
+    color: #334155;
 }
 
 .container {
@@ -12,61 +14,142 @@ body {
 
 .title {
     text-align: center;
-    color: #333;
-    margin-bottom: 40px;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 50px;
 }
 
-/* THE 3-COLUMN GRID */
+/* THE GRID SYSTEM */
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Exactly 3 columns */
+    grid-template-columns: repeat(3, 1fr); /* 3 Columns */
     gap: 30px;
 }
 
-/* THE CARD BUTTON */
+/* THE PREMIUM CARD */
 .portfolio-card {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
-    text-decoration: none; /* Removes blue underline */
-    color: inherit;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .portfolio-card:hover {
-    transform: translateY(-5px); /* Gentle lift on hover */
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.image-wrapper {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
+/* THE GREY HEADER AREA */
+.card-header {
+    background-color: #f1f5f9; /* Light grey background */
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 30px;
 }
 
-.image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Keeps images from stretching */
-    pointer-events: none; /* PREVENTS THE HOVER TEXT */
+.industry-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #2563eb; /* Professional Blue */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
+.image-container img {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain; /* Prevents icons from stretching */
+    pointer-events: none;
+}
+
+/* TEXT AREA */
 .portfolio-info {
-    padding: 20px;
-    text-align: center;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
 }
 
 .portfolio-info h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.4rem;
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
+    color: #0f172a;
 }
 
-/* MOBILE RESPONSIVE: Stack to 1 column on phones */
-@media (max-width: 768px) {
+.description {
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    /* Limit to 3 lines of text */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* THE BUBBLES (TAGS) */
+.feature-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.feature-tags span {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* THE LINK STYLE */
+hr {
+    border: 0;
+    border-top: 1px solid #f1f5f9;
+    margin-top: auto;
+    margin-bottom: 15px;
+}
+
+.view-link {
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 1024px) {
     .portfolio-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr); /* 2 Columns for tablets */
+    }
+}
+
+@media (max-width: 640px) {
+    .portfolio-grid {
+        grid-template-columns: 1fr; /* 1 Column for phones */
+    }
+    .title {
+        font-size: 1.8rem;
     }
 }
