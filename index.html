@@ -101,17 +101,43 @@ function render(list) {
       ? `<img src="${p.imageUrl}" onerror="this.classList.add('err');this.nextElementSibling.style.display='flex'"><div class="placeholder" style="display:none">${c.ic}</div>`
       : `<div class="placeholder">${c.ic}</div>`;
     
-    return `<div class="card" style="animation-delay:${i * .06}s" onclick="openMod(${ri})">
-      <div class="card-img" style="background:${c.bg}22">${img}<span class="pill" style="background:${c.bg}">${p.industry}</span></div>
-      <div class="card-body">
-        <div class="card-title">${p.title}</div>
-        <div class="card-desc">${p.description}</div>
-      </div>
-      <div class="card-footer">
-        <button class="vbtn">View Details <span class="arr">→</span></button>
-      </div>
-    </div>`;
-  }).join('');
+   return list.map((p, i) => {
+        const ri = DATA.indexOf(p);
+        const c = gc(p.industry); // Gets your custom colors (Finance, HR, etc.)
+        
+        // Handle the Image: Show the image if it exists, otherwise show the industry icon
+        const hi = p.imageUrl && p.imageUrl.trim() !== '';
+        const img = hi 
+            ? `<img src="${p.imageUrl}" onerror="this.classList.add('err');this.nextElementSibling.style.display='flex'">`
+            : '';
+        const placeholder = `<div class="placeholder" ${hi ? 'style="display:none"' : ''}>${c.ic}</div>`;
+
+        // Create the Feature Tags (Bubbles)
+        // This takes "Power BI | SQL | DAX" and turns them into individual <span> items
+        const featureTags = p.features.map(f => `<span>${f.trim()}</span>`).join('');
+
+        return `
+            <div class="portfolio-card" style="animation-delay:${i * .06}s" onclick="openMod(${ri})">
+                <div class="card-header" style="background-color: ${c.bg}15;">
+                    <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
+                    <div class="image-container">
+                        ${img}
+                        ${placeholder}
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>${p.title}</h3>
+                    <p class="description">${p.description}</p>
+                    <div class="feature-tags">
+                        ${featureTags}
+                    </div>
+                    <hr>
+                    <div class="view-link">
+                        View Details <span class="arr" style="margin-left:5px">→</span>
+                    </div>
+                </div>
+            </div>`;
+    }).join('');
 }
 
 function openMod(i) {
@@ -157,4 +183,5 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeMod()
 
 </body>
 </html>
+
 
