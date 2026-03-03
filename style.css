@@ -19,7 +19,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif; /* Clean, modern body font */
+    font-family: 'Inter', Times new roman; /* Clean, modern body font */
     background-color: var(--bg) !important;
     color: var(--text);
     padding: 60px 20px;
@@ -128,7 +128,7 @@ body {
 
 /* IMAGE HEADER & CENTERING */
 .card-header {
-    height: 220px;
+    height: 200px;
     width: 100%;
     position: relative;
     overflow: hidden;
@@ -141,7 +141,7 @@ body {
 .image-container {
     width: 100%;
     height: 100%;
-    display: flex;
+    display: block;
     align-items: center;
     justify-content: center;
 }
@@ -273,3 +273,4 @@ hr { border: 0; border-top: 1px solid #F3F4F6; margin-bottom: 16px; }
     .portfolio-grid { grid-template-columns: 1fr; }
     .title { font-size: 2.2rem; }
 }
+
