@@ -96,6 +96,15 @@ body {
     gap: 24px;
 }
 
+Gemini said
+You hit the nail on the head. The reason your projects are "blank" is actually a CSS transparency issue, not a data issue.
+
+In your CSS for .portfolio-card, you have opacity: 0; set to prepare for an animation, but you haven't triggered the animation yet. Because the opacity is 0, the cards are there (which is why you can click them), but they are invisible.
+
+The Fix: Update your CSS
+Locate the .portfolio-card class in your CSS and add the animation property so the cards actually fade in:
+
+CSS
 /* 5. THE PREMIUM CARD */
 .portfolio-card {
     background: var(--white);
@@ -106,7 +115,10 @@ body {
     flex-direction: column;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    opacity: 0; /* Starts hidden for animation */
+    
+    /* FIX STARTS HERE */
+    opacity: 0; 
+    animation: fadeInUp 0.6s ease forwards; /* Add this line */
 }
 
 /* Hover Effect */
@@ -235,3 +247,4 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 0 0 12px 0; }
 
 @keyframes fadeInUp {
     from { transform: translateY(20px); opacity: 0; }
+
