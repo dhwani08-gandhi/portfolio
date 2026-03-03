@@ -1,5 +1,5 @@
-/* 1. RESET & PROFESSIONAL FONTS */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+/* 1. PROFESSIONAL FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&family=Playfair+Display:wght@700&display=swap');
 
 *, *::before, *::after { 
     margin: 0; 
@@ -21,10 +21,12 @@
 body {
     background-color: #F8F9FA !important;
     font-family: 'Inter', sans-serif;
+    color: var(--text);
+    line-height: 1.5;
 }
 
 /* 2. HEADER & LAYOUT */
-.container { max-width: 1200px; margin: 0 auto; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
 .page-header { text-align: center; margin-bottom: 50px; }
 
 .eyebrow {
@@ -44,19 +46,6 @@ body {
     color: #111;
 }
 
-.count-badge {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: 10px 24px;
-    font-size: .85rem;
-    font-weight: 500;
-    color: var(--muted);
-    box-shadow: var(--shadow-sm);
-    display: inline-block;
-}
-.count-badge span { color: var(--accent); font-weight: 700; }
-
 /* 3. FILTERS BAR */
 .filters-bar {
     display: flex;
@@ -69,24 +58,20 @@ body {
 }
 
 .fb {
-    padding: 12px 24px;
+    padding: 10px 22px;
     border-radius: 50px;
     border: 1px solid var(--border);
     background: var(--white);
     color: var(--muted);
-    font-size: .875rem;
+    font-size: .85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-sm);
-    font-family: inherit;
+    transition: all 0.3s ease;
 }
 
 .fb:hover {
     border-color: var(--accent);
     color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 111, 255, 0.15);
 }
 
 .fb.active {
@@ -95,166 +80,144 @@ body {
     border-color: var(--text);
 }
 
-/* 4. THE GRID - Force equal heights */
+/* 4. THE GRID - Stability Fix */
 .portfolio-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 25px;
-    /* align-items: start prevents the cards from stretching vertically when filtered */
-    align-items: start; 
-    justify-content: center;
+    gap: 30px;
+    align-items: start; /* Prevents vertical stretching when filtering */
+    justify-items: center;
 }
 
-/* 5. THE PREMIUM CARD */
+/* 5. THE PREMIUM CARD - Locked Size */
 .portfolio-card {
     background: #ffffff !important;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid rgba(0,0,0,0.05);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    /* Setting a max-width ensures cards don't get too wide on filter */
-    max-width: 380px; 
+    width: 100%;
+    max-width: 360px; 
+    height: 480px; /* FIXED TOTAL HEIGHT for uniformity */
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-md);
     cursor: pointer;
+    position: relative;
 }
 
 .portfolio-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-}}
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
 
-/* IMAGE HEADER & CENTERING */
+/* CARD IMAGE ZONE */
 .card-header {
-    height: 180px; /* Reduced height for a shorter card */
+    height: 200px; /* Fixed Image Height */
     width: 100%;
+    position: relative;
     overflow: hidden;
     background: #f1f1f1;
 }
 
-.image-container img {
-    width: 100%;
-    height: 100%;
-    /* object-fit: cover ensures the image fills the space without distortion */
-    object-fit: cover; 
-    display: block;
-}
+.image-container { width: 100%; height: 100%; }
 
 .image-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform .8s cubic-bezier(0.165, 0.84, 0.44, 1);
+    object-fit: cover; /* Forces image to fit container without stretching card */
+    display: block;
+    transition: transform .8s ease;
 }
 
 .portfolio-card:hover .image-container img { transform: scale(1.08); }
 
-
 .industry-badge {
     position: absolute;
-    top: 16px; left: 16px;
+    top: 15px; left: 15px;
     color: white;
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-size: .7rem;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: .65rem;
     font-weight: 700;
-    z-index: 10;
-    letter-spacing: 0.05em;
+    z-index: 5;
     text-transform: uppercase;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
 }
 
-/* 6. TEXT AREA */
+/* 6. CONTENT ZONE */
 .portfolio-info {
-    padding: 28px;
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .portfolio-info h3 {
-    font-family: 'Lora', serif; /* New Professional Font */
-    font-size: 1.2rem;
+    font-family: 'Lora', serif; /* Updated Font as requested */
+    font-size: 1.25rem;
     color: #111;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     line-height: 1.3;
 }
 
 .description {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: #6B7280;
-    line-height: 1.5;
+    line-height: 1.6;
     margin-bottom: 15px;
+    /* Limit lines to keep card height stable */
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Shorter description area */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* 7. TAGS */
 .feature-tags {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    margin-top: auto; /* Push tags to bottom of text area */
     margin-bottom: 20px;
 }
 
 .feature-tags span {
     background: #F3F4F6;
-    border: 1px solid #E5E7EB;
     color: #4B5563;
     font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: .72rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: .7rem;
 }
 
-/* 8. FOOTER */
-hr { border: 0; border-top: 1px solid #F3F4F6; margin-bottom: 16px; }
-
 .view-link {
+    margin-top: auto; /* Pushes link to the bottom of the card */
     font-size: .85rem;
     font-weight: 700;
     color: var(--accent);
     display: flex;
     align-items: center;
     gap: 6px;
-    transition: gap 0.2s ease;
 }
 
-.portfolio-card:hover .view-link { gap: 10px; }
-
-/* 9. MODAL & ANIMATIONS */
+/* 7. MODAL */
 .ov {
     display:none; position:fixed; inset:0; z-index:999;
-    background:rgba(10, 10, 10, 0.6); backdrop-filter:blur(12px);
+    background:rgba(10, 10, 10, 0.6); backdrop-filter:blur(10px);
     align-items:center; justify-content:center; padding:20px;
 }
 .ov.open { display:flex; }
 
 .modal {
     background:var(--white); 
-    border-radius:28px; 
+    border-radius:24px; 
     width:100%;
-    max-width:650px; 
+    max-width:600px; 
     max-height:90vh; 
     overflow-y:auto; 
-    box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
 }
 
 @keyframes fadeInUp {
-    from { transform: translateY(30px); opacity: 0; }
+    from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-
-@keyframes slideUp {
-    from { transform: translateY(40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-    .portfolio-grid { grid-template-columns: 1fr; }
-    .title { font-size: 2.2rem; }
-}
-
-
