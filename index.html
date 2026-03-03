@@ -1,135 +1,316 @@
-<script>
-    // 1. Industry Configuration
-    const IC = {
-        'Finance':       {bg:'#1A5C3A', lt:'#E8F5EE', tx:'#1A5C3A', ic:'💰'},
-        'HR':            {bg:'#7C3AED', lt:'#F3EEFF', tx:'#7C3AED', ic:'👥'},
-        'Supply Chain':  {bg:'#B45309', lt:'#FEF3E2', tx:'#B45309', ic:'🚛'},
-        'Share Market':  {bg:'#1D4ED8', lt:'#EFF4FF', tx:'#1D4ED8', ic:'📈'},
-        'Sales':         {bg:'#BE185D', lt:'#FDF0F6', tx:'#BE185D', ic:'🛒'},
-        'Operations':    {bg:'#0F766E', lt:'#EDFAF8', tx:'#0F766E', ic:'⚙️'},
-        'Procurement':   {bg:'#92400E', lt:'#FEF3E2', tx:'#92400E', ic:'📦'},
-        'Reconciliation':{bg:'#374151', lt:'#F3F4F6', tx:'#374151', ic:'🔁'},
-    };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard</title>
+    <style>
+        /* 1. PROFESSIONAL FONTS */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&family=Playfair+Display:wght@700&display=swap');
 
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
-    let DATA = [];
-    let AF = 'All';
-
-    // 2. Data Loading with error handling
-    async function loadDataFromSheet() {
-        try {
-            const response = await fetch(sheetUrl);
-            const csvData = await response.text();
-            
-            // Basic CSV parser that handles quoted commas
-            const rows = csvData.split('\n').slice(1); 
-            DATA = rows.map(row => {
-                const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if (cols.length < 6) return null;
-
-                return {
-                    title: cols[0].replace(/"/g, '').trim(),
-                    industry: cols[1].replace(/"/g, '').trim(),
-                    description: cols[2].replace(/"/g, '').trim(),
-                    features: cols[3].replace(/"/g, '').split('|').map(f => f.trim()),
-                    dashboardUrl: cols[4].replace(/"/g, '').trim(),
-                    imageUrl: cols[5].replace(/"/g, '').trim()
-                };
-            }).filter(p => p !== null);
-
-            refresh();
-        } catch (error) {
-            console.error("Critical Error: Could not load sheet data.", error);
-        }
-    }
-
-    // 3. Helper to get industry styles
-    function gc(ind) {
-        for (const [k, v] of Object.entries(IC)) 
-            if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
-        return {bg:'#1E6FFF', lt:'#EEF3FF', tx:'#1E6FFF', ic:'📊'};
-    }
-
-    // 4. Build Dynamic Filter Buttons
-    function buildFilters() {
-        const bar = document.getElementById('filters-container');
-        if (!bar) return;
-
-        // Keep only the "All" button (assumed to be the first one)
-        const allBtn = bar.querySelector('.fb');
-        bar.innerHTML = '';
-        if (allBtn) bar.appendChild(allBtn);
-        
-        const industries = [...new Set(DATA.map(p => p.industry))];
-        industries.forEach(ind => {
-            const b = document.createElement('button');
-            b.className = 'fb'; 
-            b.textContent = ind;
-            b.onclick = (e) => filter(ind, e.target); 
-            bar.appendChild(b);
-        });
-    }
-
-    function filter(v, btn) {
-        AF = v;
-        document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
-    }
-
-    // 5. Core Render Function (Direct Redirect)
-    function render(list) {
-        const ct = document.getElementById('ct');
-        const cs = document.getElementById('cs');
-        if (ct) ct.textContent = DATA.length;
-        if (cs) cs.textContent = list.length;
-
-        const g = document.getElementById('portfolio-grid');
-        if (!g) return;
-        
-        if (!list.length) {
-            g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B7280">No projects found for this category.</div>';
-            return;
+        *, *::before, *::after { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
 
-        g.innerHTML = list.map((p, i) => {
-            const c = gc(p.industry);
-            const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
+        :root {
+            --bg: #F8F9FA;
+            --white: #ffffff;
+            --text: #111827;
+            --muted: #6B7280;
+            --border: #E5E7EB;
+            --accent: #1E6FFF; 
+        }
+
+        body {
+            background-color: var(--bg) !important;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        /* 2. HEADER & STATS */
+        .page-header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
+        .title { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; }
+        .stats-badge { font-size: 0.9rem; color: var(--muted); margin-bottom: 30px; }
+
+        /* 3. FILTERS BAR */
+        .filters-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .fb {
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .fb.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+        /* 4. GRID SYSTEM */
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            align-items: start; 
+            justify-items: center;
+        }
+
+        /* 5. LOCKED-HEIGHT CARD */
+        .portfolio-card {
+            background: #ffffff !important;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 360px; 
+            height: 460px; /* FIXED TOTAL HEIGHT */
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .portfolio-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(30, 111, 255, 0.12);
+            border-color: var(--accent);
+        }
+
+        .card-header {
+            height: 180px; 
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: #f1f1f1;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;
+            transition: transform .8s ease;
+        }
+
+        .portfolio-card:hover .image-container img { transform: scale(1.08); }
+
+        .industry-badge {
+            position: absolute;
+            top: 15px; left: 15px;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: .65rem;
+            font-weight: 700;
+            z-index: 5;
+            text-transform: uppercase;
+        }
+
+        .portfolio-info {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .portfolio-info h3 {
+            font-family: 'Lora', serif;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .description {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .feature-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .feature-tags span {
+            background: #F3F4F6;
+            color: #4B5563;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: .7rem;
+        }
+
+        .view-link {
+            margin-top: auto; 
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* 6. CLEANUP (MODALS) */
+        .ov { display: none !important; }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="page-header">
+            <h1 class="title">Project Portfolio</h1>
+            <div class="stats-badge">
+                Showing <span id="cs">0</span> of <span id="ct">0</span> Dashboards
+            </div>
+        </header>
+
+        <div class="filters-bar" id="filters-container">
+            <button class="fb active" onclick="filter('All', this)">All</button>
+        </div>
+
+        <div class="portfolio-grid" id="portfolio-grid">
+            <div style="padding: 40px; text-align: center; grid-column: 1/-1;">Loading dashboards...</div>
+        </div>
+    </div>
+
+    <script>
+        const IC = {
+            'Finance':       {bg:'#1A5C3A'},
+            'HR':            {bg:'#7C3AED'},
+            'Supply Chain':  {bg:'#B45309'},
+            'Share Market':  {bg:'#1D4ED8'},
+            'Sales':         {bg:'#BE185D'},
+            'Operations':    {bg:'#0F766E'},
+            'Procurement':   {bg:'#92400E'},
+            'Reconciliation':{bg:'#374151'},
+        };
+
+        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
+        let DATA = [];
+        let AF = 'All';
+
+        async function loadDataFromSheet() {
+            try {
+                const response = await fetch(sheetUrl);
+                const csvData = await response.text();
+                const rows = csvData.split('\n').slice(1); 
+                
+                DATA = rows.map(row => {
+                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (cols.length < 6) return null;
+
+                    return {
+                        title: cols[0].replace(/"/g, '').trim(),
+                        industry: cols[1].replace(/"/g, '').trim(),
+                        description: cols[2].replace(/"/g, '').trim(),
+                        features: cols[3].replace(/"/g, '').split('|').map(f => f.trim()),
+                        dashboardUrl: cols[4].replace(/"/g, '').trim(),
+                        imageUrl: cols[5].replace(/"/g, '').trim()
+                    };
+                }).filter(p => p !== null);
+
+                refresh();
+            } catch (error) {
+                document.getElementById('portfolio-grid').innerHTML = "Error loading data. Please check connection.";
+                console.error("Error:", error);
+            }
+        }
+
+        function gc(ind) {
+            for (const [k, v] of Object.entries(IC)) 
+                if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
+            return {bg:'#1E6FFF'};
+        }
+
+        function buildFilters() {
+            const bar = document.getElementById('filters-container');
+            const allBtn = bar.querySelector('.fb');
+            bar.innerHTML = '';
+            bar.appendChild(allBtn);
             
-            // Image fallback logic
-            const mediaContent = hasImage 
-                ? `<img src="${p.imageUrl}" alt="${p.title}" class="filled-image" onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;background:${c.bg}15\'></div>'">`
-                : `<div style="width:100%; height:100%; background:${c.bg}15;"></div>`;
+            const industries = [...new Set(DATA.map(p => p.industry))];
+            industries.forEach(ind => {
+                const b = document.createElement('button');
+                b.className = 'fb'; 
+                b.textContent = ind;
+                b.onclick = (e) => filter(ind, e.target); 
+                bar.appendChild(b);
+            });
+        }
 
-            return `
-                <div class="portfolio-card" 
-                     style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
-                     onclick="window.open('${p.dashboardUrl}', '_blank')">
-                    <div class="card-header">
-                        <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
-                        <div class="image-container">
-                            ${mediaContent}
+        function filter(v, btn) {
+            AF = v;
+            document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
+        }
+
+        function render(list) {
+            const g = document.getElementById('portfolio-grid');
+            document.getElementById('ct').textContent = DATA.length;
+            document.getElementById('cs').textContent = list.length;
+            
+            if (!list.length) {
+                g.innerHTML = '<div>No projects found.</div>';
+                return;
+            }
+
+            g.innerHTML = list.map((p, i) => {
+                const c = gc(p.industry);
+                const hasImg = p.imageUrl && p.imageUrl.trim() !== '';
+                
+                return `
+                    <div class="portfolio-card" 
+                         style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
+                         onclick="window.open('${p.dashboardUrl}', '_blank')">
+                        <div class="card-header">
+                            <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
+                            <div class="image-container">
+                                ${hasImg ? `<img src="${p.imageUrl}" alt="${p.title}" onerror="this.style.display='none'">` : `<div style="width:100%;height:100%;background:${c.bg}15"></div>`}
+                            </div>
                         </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>${p.title}</h3>
-                        <p class="description">${p.description}</p>
-                        <div class="feature-tags">
-                            ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
+                        <div class="portfolio-info">
+                            <h3>${p.title}</h3>
+                            <p class="description">${p.description}</p>
+                            <div class="feature-tags">
+                                ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
+                            </div>
+                            <div class="view-link">Open Dashboard ↗</div>
                         </div>
-                        <div class="view-link">Open Dashboard ↗</div>
-                    </div>
-                </div>`;
-        }).join('');
-    }
+                    </div>`;
+            }).join('');
+        }
 
-    function refresh() { 
-        buildFilters(); 
-        render(AF === 'All' ? DATA : DATA.filter(p => p.industry === AF)); 
-    }
+        function refresh() { 
+            buildFilters(); 
+            render(AF === 'All' ? DATA : DATA.filter(p => p.industry === AF)); 
+        }
 
-    // 6. Initialization
-    loadDataFromSheet();
-
-    // Removed openMod and closeMod as the whole card is now a direct link.
-</script>
+        loadDataFromSheet();
+    </script>
+</body>
+</html>
