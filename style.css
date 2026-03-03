@@ -1,143 +1,141 @@
-/* 1. RESET & FONTS */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* 1. RESET & PROFESSIONAL FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+
+*, *::before, *::after { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
 :root {
-    --bg: #F7F6F3;
-    --white: #fff;
-    --text: #1A1A1A;
-    --muted: #6B6B6B;
-    --border: #E5E3DE;
+    --bg: #F9FAFB;
+    --white: #ffffff;
+    --text: #111827;
+    --muted: #6B7280;
+    --border: #E5E7EB;
     --accent: #1E6FFF; 
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 20px -1px rgba(0, 0, 0, 0.08);
 }
 
 body {
-    font-family: 'DM Sans', sans-serif;
-    background: #F8F9FA !important;
+    font-family: 'Inter', sans-serif; /* Clean, modern body font */
+    background-color: var(--bg) !important;
     color: var(--text);
-    padding: 40px 20px;
-    line-height: 1.5;
+    padding: 60px 20px;
+    line-height: 1.6;
 }
 
-/* 2. HEADER & STATS STYLES */
+/* 2. HEADER & LAYOUT */
 .container { max-width: 1200px; margin: 0 auto; }
-.page-header { text-align: center; margin-bottom: 40px; }
+.page-header { text-align: center; margin-bottom: 50px; }
 
 .eyebrow {
-    font-size: .72rem;
-    font-weight: 600;
-    letter-spacing: .1em;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .15em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .title {
     font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #111;
 }
 
 .count-badge {
-    background: #fff;
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 50px;
-    padding: 8px 20px;
+    padding: 10px 24px;
     font-size: .85rem;
+    font-weight: 500;
     color: var(--muted);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: var(--shadow-sm);
     display: inline-block;
 }
 .count-badge span { color: var(--accent); font-weight: 700; }
 
 /* 3. FILTERS BAR */
-/* 4. Filter Layout Fix */
 .filters-bar {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap; /* Allows many filters to wrap to new lines */
-    margin: 0 auto 50px auto;
+    flex-wrap: wrap;
+    margin: 0 auto 60px auto;
     max-width: 1000px;
 }
 
 .fb {
-    padding: 10px 22px;
+    padding: 12px 24px;
     border-radius: 50px;
     border: 1px solid var(--border);
     background: var(--white);
     color: var(--muted);
-    font-size: .85rem;
-    font-weight: 500;
+    font-size: .875rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    box-shadow: var(--shadow-sm);
     font-family: inherit;
 }
 
 .fb:hover {
-    background-color: var(--accent);
-    color: white;
     border-color: var(--accent);
+    color: var(--accent);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 111, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(30, 111, 255, 0.15);
 }
 
 .fb.active {
     background: var(--text);
     color: #fff;
     border-color: var(--text);
-    transform: scale(1.05);
 }
 
-/* 4. THE GRID */
+/* 4. THE GRID - Force equal heights */
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 32px;
+    align-items: stretch; /* This makes all cards in a row the same height */
 }
 
 /* 5. THE PREMIUM CARD */
-/* 2. Enhanced Card Style */
 .portfolio-card {
-    background: #FFFFFF !important; /* Pure white card body */
-    border-radius: 20px; /* Rounded on all 4 sides */
-    border: 1px solid rgba(0,0,0,0.05); /* Very light border */
+    background: var(--white) !important;
+    border-radius: 24px;
+    border: 1px solid rgba(0,0,0,0.04);
     overflow: hidden;
     display: flex;
-    flex-direction: column;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    
-    /* Elegant Shadow to make it look like a physical card */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    flex-direction: column; /* Vertical stack */
     height: 100%;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: var(--shadow-md);
+    opacity: 0; /* Prepared for fadeInUp animation */
 }
 
-/* Hover Effect */
 .portfolio-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-12px);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.12);
 }
 
-Gemini said
-To place the icon exactly in the center of the header (middle of the "image zone"), we need to ensure the container is using a Flexbox layout with full height and width. This prevents the icon from floating to the top-left corner.
-
-1. The CSS Fix for Perfect Centering
-Replace your .card-header and .placeholder-fallback styles with these to force vertical and horizontal alignment:
-
-CSS
-/* Ensure the header area is a flex container */
+/* IMAGE HEADER & CENTERING */
 .card-header {
-    height: 200px;
+    height: 220px;
     width: 100%;
     position: relative;
     overflow: hidden;
-    background: #FFFFFF;
-    display: flex;         /* Use Flexbox */
-    align-items: center;    /* Center vertically */
-    justify-content: center; /* Center horizontally */
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;    /* Center Icon Vertically */
+    justify-content: center; /* Center Icon Horizontally */
 }
 
 .image-container {
@@ -151,120 +149,127 @@ CSS
 .image-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
-    object-position: center;
-    display: block;
-    transition: transform .6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    object-fit: cover;
+    transition: transform .8s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.portfolio-card:hover .image-container img { transform: scale(1.1); }
+.portfolio-card:hover .image-container img { transform: scale(1.08); }
 
 .placeholder-fallback {
     display: flex !important;
-    align-items: center;    /* Vertical alignment */
-    justify-content: center; /* Horizontal alignment */
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    font-size: 4.5rem;      /* Size of the emoji/icon */
-    margin: 0;
-    padding: 0;
+    font-size: 5rem; /* Large professional icons */
 }
 
 .industry-badge {
     position: absolute;
-    top: 14px; left: 14px;
+    top: 16px; left: 16px;
     color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: .68rem;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: .7rem;
     font-weight: 700;
-    z-index: 2;
+    z-index: 10;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* 6. TEXT AREA */
 .portfolio-info {
-    padding: 20px 20px 14px;
-    flex: 1;
+    padding: 28px;
+    flex: 1; /* Grow to fill space */
     display: flex;
     flex-direction: column;
 }
 
 .portfolio-info h3 {
     font-family: 'Playfair Display', serif;
-    font-size: 1.25rem;
-    margin-bottom: 10px;
-    color: #000;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    color: #111;
+    line-height: 1.3;
 }
 
 .description {
-    font-size: .85rem;
+    font-size: .9rem;
     color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 16px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    /* Limit lines for clean look */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* 7. BUBBLES / TAGS */
+/* 7. TAGS */
 .feature-tags {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
+    margin-top: auto; /* Push tags to bottom of text area */
+    margin-bottom: 20px;
 }
 
 .feature-tags span {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: #64748b;
-    font-weight: 500;
-    padding: 4px 10px; /* Re-added padding */
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    color: #4B5563;
+    font-weight: 600;
+    padding: 5px 12px;
     border-radius: 8px;
-    font-size: .7rem;
+    font-size: .72rem;
 }
 
 /* 8. FOOTER */
-hr { border: 0; border-top: 1px solid var(--border); margin: 0 0 12px 0; }
+hr { border: 0; border-top: 1px solid #F3F4F6; margin-bottom: 16px; }
 
 .view-link {
-    font-size: .8rem;
-    font-weight: 600;
+    font-size: .85rem;
+    font-weight: 700;
     color: var(--accent);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    transition: gap 0.2s ease;
 }
+
+.portfolio-card:hover .view-link { gap: 10px; }
 
 /* 9. MODAL & ANIMATIONS */
 .ov {
     display:none; position:fixed; inset:0; z-index:999;
-    background:rgba(15,15,15,.55); backdrop-filter:blur(8px);
+    background:rgba(10, 10, 10, 0.6); backdrop-filter:blur(12px);
     align-items:center; justify-content:center; padding:20px;
 }
 .ov.open { display:flex; }
 
 .modal {
     background:var(--white); 
-    border-radius:22px; 
+    border-radius:28px; 
     width:100%;
-    max-width:600px; 
+    max-width:650px; 
     max-height:90vh; 
     overflow-y:auto; 
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    animation: slideUp 0.4s ease-out;
+    box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.35);
 }
 
 @keyframes fadeInUp {
-    from { 
-        transform: translateY(20px); 
-        opacity: 0; 
-    }
-    to { 
-        transform: translateY(0); 
-        opacity: 1; /* This is what makes the card stay visible */
-    }
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
 
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .title { font-size: 2.2rem; }
+}
