@@ -3,314 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Dashboard</title>
+    <title>Portfolio</title>
     <style>
-        /* 1. PROFESSIONAL FONTS */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&family=Playfair+Display:wght@700&display=swap');
-
-        *, *::before, *::after { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@600&family=Playfair+Display:wght@700&display=swap');
 
         :root {
             --bg: #F8F9FA;
-            --white: #ffffff;
+            --accent: #1E6FFF;
             --text: #111827;
-            --muted: #6B7280;
-            --border: #E5E7EB;
-            --accent: #1E6FFF; 
         }
 
-        body {
-            background-color: var(--bg) !important;
-            font-family: 'Inter', sans-serif;
-            color: var(--text);
-            padding: 20px;
-        }
-
-        /* 2. HEADER & STATS */
-        .page-header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
-        .title { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; }
-        .stats-badge { font-size: 0.9rem; color: var(--muted); margin-bottom: 30px; }
-
-        /* 3. FILTERS BAR */
-        .filters-bar {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 40px;
-        }
-
-        .fb {
-            padding: 8px 20px;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-            background: var(--white);
-            color: var(--muted);
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .fb.active { background: var(--text); color: #fff; border-color: var(--text); }
-
-        /* 4. GRID SYSTEM */
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Filter Styles */
+        .filters-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px; min-height: 50px; }
+        .fb { padding: 8px 20px; border-radius: 50px; border: 1px solid #E5E7EB; background: white; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .fb.active { background: var(--text); color: white; }
 
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            align-items: start; 
-            justify-items: center;
-        }
-
-        /* 5. LOCKED-HEIGHT CARD */
+        /* Grid Styles */
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        
         .portfolio-card {
-            background: #ffffff !important;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 360px; 
-            height: 460px; /* FIXED TOTAL HEIGHT */
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-            position: relative;
+            background: white; border-radius: 20px; overflow: hidden; height: 460px;
+            display: flex; flex-direction: column; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.4s;
         }
+        .portfolio-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
-        .portfolio-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(30, 111, 255, 0.12);
-            border-color: var(--accent);
-        }
+        .card-header { height: 180px; position: relative; background: #eee; }
+        .card-header img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .industry-badge { position: absolute; top: 15px; left: 15px; color: white; padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        
+        .portfolio-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .portfolio-info h3 { font-family: 'Lora', serif; margin: 0 0 10px 0; }
+        .description { font-size: 0.9rem; color: #6B7280; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .view-link { margin-top: auto; color: var(--accent); font-weight: 700; font-size: 0.85rem; }
 
-        .card-header {
-            height: 180px; 
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            background: #f1f1f1;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            display: block;
-            transition: transform .8s ease;
-        }
-
-        .portfolio-card:hover .image-container img { transform: scale(1.08); }
-
-        .industry-badge {
-            position: absolute;
-            top: 15px; left: 15px;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: .65rem;
-            font-weight: 700;
-            z-index: 5;
-            text-transform: uppercase;
-        }
-
-        .portfolio-info {
-            padding: 24px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .portfolio-info h3 {
-            font-family: 'Lora', serif;
-            font-size: 1.25rem;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .description {
-            font-size: 0.88rem;
-            color: var(--muted);
-            line-height: 1.6;
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .feature-tags {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .feature-tags span {
-            background: #F3F4F6;
-            color: #4B5563;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: .7rem;
-        }
-
-        .view-link {
-            margin-top: auto; 
-            font-size: .85rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        /* 6. CLEANUP (MODALS) */
-        .ov { display: none !important; }
-
-        @keyframes fadeInUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        /* Error Message Style */
+        #status-msg { text-align: center; padding: 50px; font-weight: bold; color: #ef4444; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header class="page-header">
-            <h1 class="title">Project Portfolio</h1>
-            <div class="stats-badge">
-                Showing <span id="cs">0</span> of <span id="ct">0</span> Dashboards
-            </div>
-        </header>
-
-        <div class="filters-bar" id="filters-container">
-            <button class="fb active" onclick="filter('All', this)">All</button>
-        </div>
-
-        <div class="portfolio-grid" id="portfolio-grid">
-            <div style="padding: 40px; text-align: center; grid-column: 1/-1;">Loading dashboards...</div>
-        </div>
+<div class="container">
+    <div id="status-msg">Initializing Portfolio...</div>
+    
+    <div class="filters-bar" id="filters-container">
+        <button class="fb active" onclick="filter('All', this)">All</button>
     </div>
 
-    <script>
-        const IC = {
-            'Finance':       {bg:'#1A5C3A'},
-            'HR':            {bg:'#7C3AED'},
-            'Supply Chain':  {bg:'#B45309'},
-            'Share Market':  {bg:'#1D4ED8'},
-            'Sales':         {bg:'#BE185D'},
-            'Operations':    {bg:'#0F766E'},
-            'Procurement':   {bg:'#92400E'},
-            'Reconciliation':{bg:'#374151'},
-        };
+    <div class="portfolio-grid" id="portfolio-grid"></div>
+</div>
 
-        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
-        let DATA = [];
-        let AF = 'All';
+<script>
+    const IC = {
+        'Finance': '#1A5C3A', 'HR': '#7C3AED', 'Supply Chain': '#B45309',
+        'Share Market': '#1D4ED8', 'Sales': '#BE185D', 'Operations': '#0F766E',
+        'Procurement': '#92400E', 'Reconciliation': '#374151'
+    };
 
-        async function loadDataFromSheet() {
-            try {
-                const response = await fetch(sheetUrl);
-                const csvData = await response.text();
-                const rows = csvData.split('\n').slice(1); 
-                
-                DATA = rows.map(row => {
-                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (cols.length < 6) return null;
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
+    let DATA = [];
 
-                    return {
-                        title: cols[0].replace(/"/g, '').trim(),
-                        industry: cols[1].replace(/"/g, '').trim(),
-                        description: cols[2].replace(/"/g, '').trim(),
-                        features: cols[3].replace(/"/g, '').split('|').map(f => f.trim()),
-                        dashboardUrl: cols[4].replace(/"/g, '').trim(),
-                        imageUrl: cols[5].replace(/"/g, '').trim()
-                    };
-                }).filter(p => p !== null);
-
-                refresh();
-            } catch (error) {
-                document.getElementById('portfolio-grid').innerHTML = "Error loading data. Please check connection.";
-                console.error("Error:", error);
-            }
-        }
-
-        function gc(ind) {
-            for (const [k, v] of Object.entries(IC)) 
-                if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
-            return {bg:'#1E6FFF'};
-        }
-
-        function buildFilters() {
-            const bar = document.getElementById('filters-container');
-            const allBtn = bar.querySelector('.fb');
-            bar.innerHTML = '';
-            bar.appendChild(allBtn);
+    async function loadData() {
+        const status = document.getElementById('status-msg');
+        try {
+            const response = await fetch(sheetUrl);
+            if (!response.ok) throw new Error("Failed to fetch Google Sheet");
             
-            const industries = [...new Set(DATA.map(p => p.industry))];
-            industries.forEach(ind => {
-                const b = document.createElement('button');
-                b.className = 'fb'; 
-                b.textContent = ind;
-                b.onclick = (e) => filter(ind, e.target); 
-                bar.appendChild(b);
-            });
+            const csvData = await response.text();
+            const rows = csvData.split('\n').slice(1); 
+
+            DATA = rows.map(row => {
+                // Better CSV Split logic to handle commas inside quotes
+                const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                if (!cols || cols.length < 5) return null;
+
+                return {
+                    title: cols[0].replace(/"/g, '').trim(),
+                    industry: cols[1].replace(/"/g, '').trim(),
+                    description: cols[2].replace(/"/g, '').trim(),
+                    features: cols[3].replace(/"/g, '').split('|'),
+                    dashboardUrl: cols[4].replace(/"/g, '').trim(),
+                    imageUrl: cols[5] ? cols[5].replace(/"/g, '').trim() : ''
+                };
+            }).filter(item => item !== null);
+
+            status.style.display = 'none';
+            buildFilters();
+            render(DATA);
+
+        } catch (error) {
+            status.innerHTML = "⚠️ Error: " + error.message + "<br><small>Check if your Google Sheet is 'Published to Web' as CSV.</small>";
+            console.error(error);
         }
+    }
 
-        function filter(v, btn) {
-            AF = v;
-            document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
-        }
+    function buildFilters() {
+        const container = document.getElementById('filters-container');
+        const industries = [...new Set(DATA.map(d => d.industry))];
+        industries.forEach(ind => {
+            const btn = document.createElement('button');
+            btn.className = 'fb';
+            btn.textContent = ind;
+            btn.onclick = (e) => filter(ind, e.target);
+            container.appendChild(btn);
+        });
+    }
 
-        function render(list) {
-            const g = document.getElementById('portfolio-grid');
-            document.getElementById('ct').textContent = DATA.length;
-            document.getElementById('cs').textContent = list.length;
-            
-            if (!list.length) {
-                g.innerHTML = '<div>No projects found.</div>';
-                return;
-            }
+    function filter(industry, btn) {
+        document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filtered = industry === 'All' ? DATA : DATA.filter(d => d.industry === industry);
+        render(filtered);
+    }
 
-            g.innerHTML = list.map((p, i) => {
-                const c = gc(p.industry);
-                const hasImg = p.imageUrl && p.imageUrl.trim() !== '';
-                
-                return `
-                    <div class="portfolio-card" 
-                         style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
-                         onclick="window.open('${p.dashboardUrl}', '_blank')">
-                        <div class="card-header">
-                            <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
-                            <div class="image-container">
-                                ${hasImg ? `<img src="${p.imageUrl}" alt="${p.title}" onerror="this.style.display='none'">` : `<div style="width:100%;height:100%;background:${c.bg}15"></div>`}
-                            </div>
-                        </div>
-                        <div class="portfolio-info">
-                            <h3>${p.title}</h3>
-                            <p class="description">${p.description}</p>
-                            <div class="feature-tags">
-                                ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
-                            </div>
-                            <div class="view-link">Open Dashboard ↗</div>
-                        </div>
-                    </div>`;
-            }).join('');
-        }
+    function render(list) {
+        const grid = document.getElementById('portfolio-grid');
+        grid.innerHTML = list.map(p => {
+            const color = IC[p.industry] || '#1E6FFF';
+            return `
+                <div class="portfolio-card" onclick="window.open('${p.dashboardUrl}', '_blank')">
+                    <div class="card-header">
+                        <span class="industry-badge" style="background:${color}">${p.industry}</span>
+                        ${p.imageUrl ? `<img src="${p.imageUrl}" onerror="this.style.display='none'">` : ''}
+                    </div>
+                    <div class="portfolio-info">
+                        <h3>${p.title}</h3>
+                        <p class="description">${p.description}</p>
+                        <div class="view-link">Open Dashboard ↗</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 
-        function refresh() { 
-            buildFilters(); 
-            render(AF === 'All' ? DATA : DATA.filter(p => p.industry === AF)); 
-        }
+    loadData();
+</script>
 
-        loadDataFromSheet();
-    </script>
 </body>
 </html>
