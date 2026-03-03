@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JHS Analytics Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,24 +27,8 @@
             </div>
     </div>
 
-    <div class="ov" id="ov" onclick="closeMod(event)">
-        <div class="modal">
-            <div id="mimg"></div>
-            <div class="mc" style="padding:25px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <h2 id="mtitle" style="font-family:'Playfair Display', serif; margin-bottom:15px; font-size: 1.8rem;"></h2>
-                    <button onclick="closeMod()" style="cursor:pointer; background:none; border:none; font-size:1.5rem; color:#999;">✕</button>
-                </div>
-                <p id="mdesc" style="color:#4B5563; line-height:1.7; margin-bottom:25px; font-size:0.95rem;"></p>
-                <div style="font-weight:700; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:12px; color: #111;">Key Features</div>
-                <ul id="mfeats" style="list-style:none; padding:0; margin-bottom:30px;"></ul>
-                <div id="mtools"></div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Industry Configuration
+        // 1. Industry Configuration
         const IC = {
             'Finance':       {bg:'#1A5C3A', lt:'#E8F5EE', tx:'#1A5C3A', ic:'💰'},
             'HR':            {bg:'#7C3AED', lt:'#F3EEFF', tx:'#7C3AED', ic:'👥'},
@@ -60,6 +44,7 @@
         let DATA = [];
         let AF = 'All';
 
+        // 2. Data Loading
         async function loadDataFromSheet() {
             try {
                 const response = await fetch(sheetUrl);
@@ -86,6 +71,7 @@
             }
         }
 
+        // 3. Helpers
         function gc(ind) {
             for (const [k, v] of Object.entries(IC)) 
                 if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
@@ -94,7 +80,6 @@
 
         function buildFilters() {
             const bar = document.getElementById('filters-container');
-            // Keep the 'All' button, remove others
             bar.querySelectorAll('.fb:not(:nth-child(2))').forEach(b => b.remove());
             
             [...new Set(DATA.map(p => p.industry))].forEach(ind => {
@@ -113,78 +98,44 @@
             render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
         }
 
+        // 4. Core Render - Fixed Height & Direct Click
         function render(list) {
-    document.getElementById('ct').textContent = DATA.length;
-    document.getElementById('cs').textContent = list.length;
-    const g = document.getElementById('portfolio-grid');
-    
-    if (!list.length) {
-        g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B6B6B">No projects found.</div>';
-        return;
-    }
-
-    g.innerHTML = list.map((p, i) => {
-        const ri = DATA.indexOf(p);
-        const c = gc(p.industry);
-        const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
-        
-        // Removed Icons: Now shows just the image or a clean background tile
-        const mediaContent = hasImage 
-            ? `<img src="${p.imageUrl}" alt="${p.title}" class="filled-image" onerror="this.style.display='none'; this.parentElement.style.background='${c.bg}20'">`
-            : `<div style="width:100%; height:100%; background:${c.bg}15;"></div>`;
-
-        return `
-            <div class="portfolio-card" 
-                 style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
-                 onclick="openMod(${ri})">
-                <div class="card-header">
-                    <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
-                    <div class="image-container" style="width:100%; height:100%;">
-                        ${mediaContent}
-                    </div>
-                </div>
-                <div class="portfolio-info">
-                    <h3>${p.title}</h3>
-                    <p class="description">${p.description}</p>
-                    <div class="feature-tags">
-                        ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
-                    </div>
-                    <hr style="margin: 12px 0; opacity: 0.1;">
-                    <div class="view-link">View Details →</div>
-                </div>
-            </div>`;
-    }).join('');
-}
-
-        function openMod(i) {
-            const p = DATA[i], c = gc(p.industry);
-            const hi = p.imageUrl && p.imageUrl.trim() !== '';
+            document.getElementById('ct').textContent = DATA.length;
+            document.getElementById('cs').textContent = list.length;
+            const g = document.getElementById('portfolio-grid');
             
-            document.getElementById('mimg').innerHTML = hi 
-                ? `<img src="${p.imageUrl}" style="width:100%; height:280px; object-fit:cover; border-radius:18px 18px 0 0;" onerror="this.style.display='none'">` 
-                : `<div style="height:200px; background:${c.lt}; display:flex; align-items:center; justify-content:center; font-size:5rem; border-radius:18px 18px 0 0;">${c.ic}</div>`;
+            if (!list.length) {
+                g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B6B6B">No projects found.</div>';
+                return;
+            }
+
+            g.innerHTML = list.map((p, i) => {
+                const c = gc(p.industry);
+                const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
                 
-            document.getElementById('mtitle').textContent = p.title;
-            document.getElementById('mdesc').textContent = p.description;
-            document.getElementById('mfeats').innerHTML = p.features.map(f => `
-                <li style="margin-bottom:10px; font-size:0.95rem; color:#4B5563; display:flex; align-items:center;">
-                    <span style="color:${c.bg}; font-weight:700; margin-right:12px; font-size:1.1rem;">✓</span>${f}
-                </li>`).join('');
-            
-            document.getElementById('mtools').innerHTML = `
-                <a href="${p.dashboardUrl}" target="_blank" style="display:block; text-align:center; text-decoration:none; background:${c.bg}; color:white; padding:15px; border-radius:14px; font-weight:600; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                    Open Live Dashboard ↗
-                </a>
-            `;
+                return `
+                    <div class="portfolio-card" 
+                         style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
+                         onclick="window.open('${p.dashboardUrl}', '_blank')">
+                        
+                        <div class="card-header">
+                            <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
+                            <div class="image-container">
+                                ${hasImage 
+                                    ? `<img src="${p.imageUrl}" alt="${p.title}" onerror="this.style.display='none'; this.parentElement.style.background='${c.bg}20'">`
+                                    : `<div style="width:100%; height:100%; background:${c.bg}15;"></div>`}
+                            </div>
+                        </div>
 
-            document.getElementById('ov').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMod(e) {
-            if (e && e.type === 'click' && e.target.id !== 'ov') return;
-            document.getElementById('ov').classList.remove('open');
-            document.body.style.overflow = '';
+                        <div class="portfolio-info">
+                            <h3>${p.title}</h3>
+                            <p class="description">${p.description}</p>
+                            <div class="feature-tags">
+                                ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
         }
 
         function refresh() { 
@@ -192,9 +143,8 @@
             render(AF === 'All' ? DATA : DATA.filter(p => p.industry === AF)); 
         }
 
+        // Initial Load
         loadDataFromSheet();
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMod(); });
     </script>
 </body>
 </html>
-
