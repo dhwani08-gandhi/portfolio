@@ -119,21 +119,33 @@ body {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
+Gemini said
+To place the icon exactly in the center of the header (middle of the "image zone"), we need to ensure the container is using a Flexbox layout with full height and width. This prevents the icon from floating to the top-left corner.
+
+1. The CSS Fix for Perfect Centering
+Replace your .card-header and .placeholder-fallback styles with these to force vertical and horizontal alignment:
+
+CSS
+/* Ensure the header area is a flex container */
 .card-header {
     height: 200px;
     width: 100%;
     position: relative;
     overflow: hidden;
-    padding: 0 !important;
-    display: flex;
-    align-items: center; /* Vertical center */
-    justify-content: center; /* Horizontal center */
-    background: #FFFFFF; /* Ensures header background is white */
+    background: #FFFFFF;
+    display: flex;         /* Use Flexbox */
+    align-items: center;    /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
 }
 
 .image-container {
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .image-container img {
@@ -148,15 +160,14 @@ body {
 .portfolio-card:hover .image-container img { transform: scale(1.1); }
 
 .placeholder-fallback {
+    display: flex !important;
+    align-items: center;    /* Vertical alignment */
+    justify-content: center; /* Horizontal alignment */
     width: 100%;
     height: 100%;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    font-size: 4.5rem; /* Larger icon */
-    position: absolute;
-    top: 0;
-    left: 0;
+    font-size: 4.5rem;      /* Size of the emoji/icon */
+    margin: 0;
+    padding: 0;
 }
 
 .industry-badge {
@@ -255,4 +266,5 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 0 0 12px 0; }
         opacity: 1; /* This is what makes the card stay visible */
     }
 }
+
 
