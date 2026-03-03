@@ -1,5 +1,5 @@
 <script>
-    // Industry Configuration
+    // 1. Industry Configuration
     const IC = {
         'Finance':       {bg:'#1A5C3A', lt:'#E8F5EE', tx:'#1A5C3A', ic:'💰'},
         'HR':            {bg:'#7C3AED', lt:'#F3EEFF', tx:'#7C3AED', ic:'👥'},
@@ -15,12 +15,14 @@
     let DATA = [];
     let AF = 'All';
 
+    // 2. Data Loading with error handling
     async function loadDataFromSheet() {
         try {
             const response = await fetch(sheetUrl);
             const csvData = await response.text();
+            
+            // Basic CSV parser that handles quoted commas
             const rows = csvData.split('\n').slice(1); 
-
             DATA = rows.map(row => {
                 const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                 if (cols.length < 6) return null;
@@ -37,21 +39,29 @@
 
             refresh();
         } catch (error) {
-            console.error("Error loading sheet:", error);
+            console.error("Critical Error: Could not load sheet data.", error);
         }
     }
 
+    // 3. Helper to get industry styles
     function gc(ind) {
         for (const [k, v] of Object.entries(IC)) 
             if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
         return {bg:'#1E6FFF', lt:'#EEF3FF', tx:'#1E6FFF', ic:'📊'};
     }
 
+    // 4. Build Dynamic Filter Buttons
     function buildFilters() {
         const bar = document.getElementById('filters-container');
-        bar.querySelectorAll('.fb:not(:nth-child(2))').forEach(b => b.remove());
+        if (!bar) return;
+
+        // Keep only the "All" button (assumed to be the first one)
+        const allBtn = bar.querySelector('.fb');
+        bar.innerHTML = '';
+        if (allBtn) bar.appendChild(allBtn);
         
-        [...new Set(DATA.map(p => p.industry))].forEach(ind => {
+        const industries = [...new Set(DATA.map(p => p.industry))];
+        industries.forEach(ind => {
             const b = document.createElement('button');
             b.className = 'fb'; 
             b.textContent = ind;
@@ -67,30 +77,34 @@
         render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
     }
 
+    // 5. Core Render Function (Direct Redirect)
     function render(list) {
-        document.getElementById('ct').textContent = DATA.length;
-        document.getElementById('cs').textContent = list.length;
+        const ct = document.getElementById('ct');
+        const cs = document.getElementById('cs');
+        if (ct) ct.textContent = DATA.length;
+        if (cs) cs.textContent = list.length;
+
         const g = document.getElementById('portfolio-grid');
+        if (!g) return;
         
         if (!list.length) {
-            g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B6B6B">No projects found.</div>';
+            g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B7280">No projects found for this category.</div>';
             return;
         }
 
         g.innerHTML = list.map((p, i) => {
-            const ri = DATA.indexOf(p);
             const c = gc(p.industry);
             const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
             
-            // Fixed Image Logic: Fallback to industry-colored background if image fails or is missing
+            // Image fallback logic
             const mediaContent = hasImage 
-                ? `<img src="${p.imageUrl}" alt="${p.title}" class="filled-image" onerror="this.style.display='none'; this.parentElement.style.background='${c.bg}15'">`
+                ? `<img src="${p.imageUrl}" alt="${p.title}" class="filled-image" onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;background:${c.bg}15\'></div>'">`
                 : `<div style="width:100%; height:100%; background:${c.bg}15;"></div>`;
 
             return `
                 <div class="portfolio-card" 
                      style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
-                     onclick="openMod(${ri})">
+                     onclick="window.open('${p.dashboardUrl}', '_blank')">
                     <div class="card-header">
                         <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
                         <div class="image-container">
@@ -103,41 +117,10 @@
                         <div class="feature-tags">
                             ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
                         </div>
-                        <div class="view-link">View Details →</div>
+                        <div class="view-link">Open Dashboard ↗</div>
                     </div>
                 </div>`;
         }).join('');
-    }
-
-    function openMod(i) {
-        const p = DATA[i], c = gc(p.industry);
-        const hi = p.imageUrl && p.imageUrl.trim() !== '';
-        
-        document.getElementById('mimg').innerHTML = hi 
-            ? `<img src="${p.imageUrl}" style="width:100%; height:280px; object-fit:cover; border-radius:18px 18px 0 0;" onerror="this.style.display='none'">` 
-            : `<div style="height:200px; background:${c.lt}; border-radius:18px 18px 0 0;"></div>`;
-            
-        document.getElementById('mtitle').textContent = p.title;
-        document.getElementById('mdesc').textContent = p.description;
-        document.getElementById('mfeats').innerHTML = p.features.map(f => `
-            <li style="margin-bottom:10px; font-size:0.95rem; color:#4B5563; display:flex; align-items:center;">
-                <span style="color:${c.bg}; font-weight:700; margin-right:12px; font-size:1.1rem;">✓</span>${f}
-            </li>`).join('');
-        
-        document.getElementById('mtools').innerHTML = `
-            <a href="${p.dashboardUrl}" target="_blank" style="display:block; text-align:center; text-decoration:none; background:${c.bg}; color:white; padding:15px; border-radius:14px; font-weight:600; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                Open Live Dashboard ↗
-            </a>
-        `;
-
-        document.getElementById('ov').classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeMod(e) {
-        if (e && e.type === 'click' && e.target.id !== 'ov') return;
-        document.getElementById('ov').classList.remove('open');
-        document.body.style.overflow = '';
     }
 
     function refresh() { 
@@ -145,7 +128,8 @@
         render(AF === 'All' ? DATA : DATA.filter(p => p.industry === AF)); 
     }
 
+    // 6. Initialization
     loadDataFromSheet();
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMod(); });
-</script>
 
+    // Removed openMod and closeMod as the whole card is now a direct link.
+</script>
