@@ -114,47 +114,47 @@
         }
 
         function render(list) {
-            document.getElementById('ct').textContent = DATA.length;
-            document.getElementById('cs').textContent = list.length;
-            const g = document.getElementById('portfolio-grid');
-            
-            if (!list.length) {
-                g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:100px;color:#9CA3AF;">No projects found.</div>';
-                return;
-            }
+    document.getElementById('ct').textContent = DATA.length;
+    document.getElementById('cs').textContent = list.length;
+    const g = document.getElementById('portfolio-grid');
+    
+    if (!list.length) {
+        g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B6B6B">No projects found.</div>';
+        return;
+    }
 
-            g.innerHTML = list.map((p, i) => {
-                const ri = DATA.indexOf(p);
-                const c = gc(p.industry);
-                const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
-                
-                // Logic: Center icons perfectly in the middle of the header area
-                const mediaContent = hasImage 
-                    ? `<img src="${p.imageUrl}" alt="${p.title}" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                       <div class="placeholder-fallback" style="display:none; background:${c.bg}10;">${c.ic}</div>`
-                    : `<div class="placeholder-fallback" style="background:${c.bg}10;">${c.ic}</div>`;
+    g.innerHTML = list.map((p, i) => {
+        const ri = DATA.indexOf(p);
+        const c = gc(p.industry);
+        const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
+        
+        // Removed Icons: Now shows just the image or a clean background tile
+        const mediaContent = hasImage 
+            ? `<img src="${p.imageUrl}" alt="${p.title}" class="filled-image" onerror="this.style.display='none'; this.parentElement.style.background='${c.bg}20'">`
+            : `<div style="width:100%; height:100%; background:${c.bg}15;"></div>`;
 
-                return `
-                    <div class="portfolio-card" 
-                         style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
-                         onclick="openMod(${ri})">
-                        <div class="card-header">
-                            <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
-                            <div class="image-container" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                                ${mediaContent}
-                            </div>
-                        </div>
-                        <div class="portfolio-info">
-                            <h3 style="font-family:'Playfair Display', serif; font-size:1.4rem; margin-bottom:12px;">${p.title}</h3>
-                            <p class="description">${p.description}</p>
-                            <div class="feature-tags">
-                                ${p.features.slice(0, 3).map(f => `<span>${f}</span>`).join('')}
-                            </div>
-                            <div class="view-link">View Project Details <span>→</span></div>
-                        </div>
-                    </div>`;
-            }).join('');
-        }
+        return `
+            <div class="portfolio-card" 
+                 style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
+                 onclick="openMod(${ri})">
+                <div class="card-header">
+                    <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
+                    <div class="image-container" style="width:100%; height:100%;">
+                        ${mediaContent}
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>${p.title}</h3>
+                    <p class="description">${p.description}</p>
+                    <div class="feature-tags">
+                        ${p.features.slice(0, 2).map(f => `<span>${f}</span>`).join('')}
+                    </div>
+                    <hr style="margin: 12px 0; opacity: 0.1;">
+                    <div class="view-link">View Details →</div>
+                </div>
+            </div>`;
+    }).join('');
+}
 
         function openMod(i) {
             const p = DATA[i], c = gc(p.industry);
@@ -197,3 +197,4 @@
     </script>
 </body>
 </html>
+
