@@ -115,6 +115,7 @@ body {
     flex-direction: column;
     /* Setting a max-width ensures cards don't get too wide on filter */
     max-width: 380px; 
+    height: 480px;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     cursor: pointer;
