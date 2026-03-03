@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JHS Analytics Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="filters-bar" style="text-align:center; margin-bottom: 30px;">
+        <div class="filters-bar" id="filters-container">
             <span class="fl">Filter:</span>
             <button class="fb active" onclick="filter('All', this)">All</button>
         </div>
@@ -30,29 +30,30 @@
     <div class="ov" id="ov" onclick="closeMod(event)">
         <div class="modal">
             <div id="mimg"></div>
-            <div class="mc" style="padding:20px;">
+            <div class="mc" style="padding:25px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <h2 id="mtitle" style="font-family:'Playfair Display', serif; margin-bottom:15px;"></h2>
-                    <button onclick="closeMod()" style="cursor:pointer; background:none; border:none; font-size:1.5rem;">✕</button>
+                    <h2 id="mtitle" style="font-family:'Playfair Display', serif; margin-bottom:15px; font-size: 1.8rem;"></h2>
+                    <button onclick="closeMod()" style="cursor:pointer; background:none; border:none; font-size:1.5rem; color:#999;">✕</button>
                 </div>
-                <p id="mdesc" style="color:#6B6B6B; line-height:1.6; margin-bottom:20px;"></p>
-                <div style="font-weight:700; text-transform:uppercase; font-size:0.7rem; letter-spacing:1px; margin-bottom:10px;">Key Features</div>
-                <ul id="mfeats" style="list-style:none; padding:0; margin-bottom:25px;"></ul>
+                <p id="mdesc" style="color:#4B5563; line-height:1.7; margin-bottom:25px; font-size:0.95rem;"></p>
+                <div style="font-weight:700; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:12px; color: #111;">Key Features</div>
+                <ul id="mfeats" style="list-style:none; padding:0; margin-bottom:30px;"></ul>
                 <div id="mtools"></div>
             </div>
         </div>
     </div>
 
     <script>
+        // Industry Configuration
         const IC = {
-            'Finance':        {bg:'#1A5C3A',lt:'#E8F5EE',tx:'#1A5C3A',ic:'💰'},
-            'HR':             {bg:'#7C3AED',lt:'#F3EEFF',tx:'#7C3AED',ic:'👥'},
-            'Supply Chain':   {bg:'#B45309',lt:'#FEF3E2',tx:'#B45309',ic:'🚛'},
-            'Share Market':   {bg:'#1D4ED8',lt:'#EFF4FF',tx:'#1D4ED8',ic:'📈'},
-            'Sales':          {bg:'#BE185D',lt:'#FDF0F6',tx:'#BE185D',ic:'🛒'},
-            'Operations':     {bg:'#0F766E',lt:'#EDFAF8',tx:'#0F766E',ic:'⚙️'},
-            'Procurement':    {bg:'#92400E',lt:'#FEF3E2',tx:'#92400E',ic:'📦'},
-            'Reconciliation': {bg:'#374151',lt:'#F3F4F6',tx:'#374151',ic:'🔁'},
+            'Finance':       {bg:'#1A5C3A', lt:'#E8F5EE', tx:'#1A5C3A', ic:'💰'},
+            'HR':            {bg:'#7C3AED', lt:'#F3EEFF', tx:'#7C3AED', ic:'👥'},
+            'Supply Chain':  {bg:'#B45309', lt:'#FEF3E2', tx:'#B45309', ic:'🚛'},
+            'Share Market':  {bg:'#1D4ED8', lt:'#EFF4FF', tx:'#1D4ED8', ic:'📈'},
+            'Sales':         {bg:'#BE185D', lt:'#FDF0F6', tx:'#BE185D', ic:'🛒'},
+            'Operations':    {bg:'#0F766E', lt:'#EDFAF8', tx:'#0F766E', ic:'⚙️'},
+            'Procurement':   {bg:'#92400E', lt:'#FEF3E2', tx:'#92400E', ic:'📦'},
+            'Reconciliation':{bg:'#374151', lt:'#F3F4F6', tx:'#374151', ic:'🔁'},
         };
 
         const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqp9gms0RGShThKaCK-raQCbciyNSTi94uSthfKyZXeir3TZE9q4bXjp9i0S0vmZSkaiTdRkSEx9Xs/pub?gid=0&single=true&output=csv";
@@ -88,16 +89,20 @@
         function gc(ind) {
             for (const [k, v] of Object.entries(IC)) 
                 if (ind && ind.toLowerCase().includes(k.toLowerCase())) return v;
-            return {bg:'#1E6FFF',lt:'#EEF3FF',tx:'#1E6FFF',ic:'📊'};
+            return {bg:'#1E6FFF', lt:'#EEF3FF', tx:'#1E6FFF', ic:'📊'};
         }
 
         function buildFilters() {
-            const bar = document.querySelector('.filters-bar');
-            bar.querySelectorAll('.fb:not(:first-child)').forEach(b => b.remove());
+            const bar = document.getElementById('filters-container');
+            // Keep the 'All' button, remove others
+            bar.querySelectorAll('.fb:not(:nth-child(2))').forEach(b => b.remove());
+            
             [...new Set(DATA.map(p => p.industry))].forEach(ind => {
                 const b = document.createElement('button');
-                b.className = 'fb'; b.textContent = ind;
-                b.onclick = () => filter(ind, b); bar.appendChild(b);
+                b.className = 'fb'; 
+                b.textContent = ind;
+                b.onclick = (e) => filter(ind, e.target); 
+                bar.appendChild(b);
             });
         }
 
@@ -108,69 +113,66 @@
             render(v === 'All' ? DATA : DATA.filter(p => p.industry === v));
         }
 
-    function render(list) {
-    document.getElementById('ct').textContent = DATA.length;
-    document.getElementById('cs').textContent = list.length;
-    const g = document.getElementById('portfolio-grid');
-    
-    if (!list.length) {
-        g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:80px;color:#6B6B6B">No projects found.</div>';
-        return;
-    }
+        function render(list) {
+            document.getElementById('ct').textContent = DATA.length;
+            document.getElementById('cs').textContent = list.length;
+            const g = document.getElementById('portfolio-grid');
+            
+            if (!list.length) {
+                g.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:100px;color:#9CA3AF;">No projects found.</div>';
+                return;
+            }
 
-    g.innerHTML = list.map((p, i) => {
-        const ri = DATA.indexOf(p);
-        const c = gc(p.industry);
-        const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
-        
-        // Refined fallback logic for centered icons
-    // Inside your list.map logic
-    const mediaContent = hasImage 
-        ? `<img src="${p.imageUrl}" alt="${p.title}" class="filled-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-          <div class="placeholder-fallback" style="display:none; background:${c.bg}10;">${c.ic}</div>`
-           : `<div class="placeholder-fallback" style="background:${c.bg}10;">${c.ic}</div>`;
+            g.innerHTML = list.map((p, i) => {
+                const ri = DATA.indexOf(p);
+                const c = gc(p.industry);
+                const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
+                
+                // Logic: Center icons perfectly in the middle of the header area
+                const mediaContent = hasImage 
+                    ? `<img src="${p.imageUrl}" alt="${p.title}" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                       <div class="placeholder-fallback" style="display:none; background:${c.bg}10;">${c.ic}</div>`
+                    : `<div class="placeholder-fallback" style="background:${c.bg}10;">${c.ic}</div>`;
 
-        const featureTags = p.features.slice(0, 3).map(f => `<span>${f}</span>`).join('');
+                return `
+                    <div class="portfolio-card" 
+                         style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.05}s; opacity: 0;" 
+                         onclick="openMod(${ri})">
+                        <div class="card-header">
+                            <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
+                            <div class="image-container" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                                ${mediaContent}
+                            </div>
+                        </div>
+                        <div class="portfolio-info">
+                            <h3 style="font-family:'Playfair Display', serif; font-size:1.4rem; margin-bottom:12px;">${p.title}</h3>
+                            <p class="description">${p.description}</p>
+                            <div class="feature-tags">
+                                ${p.features.slice(0, 3).map(f => `<span>${f}</span>`).join('')}
+                            </div>
+                            <div class="view-link">View Project Details <span>→</span></div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
 
-        return `
-            <div class="portfolio-card" 
-                 style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i * 0.06}s; opacity: 0;" 
-                 onclick="openMod(${ri})">
-                <div class="card-header">
-                    <span class="industry-badge" style="background-color: ${c.bg};">${p.industry}</span>
-                    <div class="image-container" style="width:100%; height:100%;">
-                        ${mediaContent}
-                    </div>
-                </div>
-                <div class="portfolio-info">
-                    <h3>${p.title}</h3>
-                    <p class="description">${p.description}</p>
-                    <div class="feature-tags">${featureTags}</div>
-                    <hr style="margin-top: auto; margin-bottom: 12px; opacity: 0.1;">
-                    <div class="view-link">
-                        View Details <span style="margin-left:5px">→</span>
-                    </div>
-                </div>
-            </div>`;
-    }).join('');
-}
         function openMod(i) {
             const p = DATA[i], c = gc(p.industry);
             const hi = p.imageUrl && p.imageUrl.trim() !== '';
             
             document.getElementById('mimg').innerHTML = hi 
-                ? `<img src="${p.imageUrl}" style="width:100%; height:250px; object-fit:cover; border-radius:18px 18px 0 0;" onerror="this.style.display='none'">` 
-                : `<div style="height:200px; background:${c.lt}; display:flex; align-items:center; justify-content:center; font-size:4rem; border-radius:18px 18px 0 0;">${c.ic}</div>`;
+                ? `<img src="${p.imageUrl}" style="width:100%; height:280px; object-fit:cover; border-radius:18px 18px 0 0;" onerror="this.style.display='none'">` 
+                : `<div style="height:200px; background:${c.lt}; display:flex; align-items:center; justify-content:center; font-size:5rem; border-radius:18px 18px 0 0;">${c.ic}</div>`;
                 
             document.getElementById('mtitle').textContent = p.title;
             document.getElementById('mdesc').textContent = p.description;
             document.getElementById('mfeats').innerHTML = p.features.map(f => `
-                <li style="margin-bottom:8px; font-size:0.9rem; color:#6B6B6B;">
-                    <span style="color:${c.bg}; font-weight:700; margin-right:8px;">✓</span>${f}
+                <li style="margin-bottom:10px; font-size:0.95rem; color:#4B5563; display:flex; align-items:center;">
+                    <span style="color:${c.bg}; font-weight:700; margin-right:12px; font-size:1.1rem;">✓</span>${f}
                 </li>`).join('');
             
             document.getElementById('mtools').innerHTML = `
-                <a href="${p.dashboardUrl}" target="_blank" style="display:block; text-align:center; text-decoration:none; background:${c.bg}; color:white; padding:12px; border-radius:12px; font-weight:700;">
+                <a href="${p.dashboardUrl}" target="_blank" style="display:block; text-align:center; text-decoration:none; background:${c.bg}; color:white; padding:15px; border-radius:14px; font-weight:600; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                     Open Live Dashboard ↗
                 </a>
             `;
@@ -195,10 +197,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
