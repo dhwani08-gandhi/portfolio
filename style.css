@@ -119,10 +119,13 @@ body {
     height: 200px;
     display: flex;
     align-items: center;
+    border-top-left-radius: 20px; /* matches your card's border radius */
+    border-top-right-radius: 20px;
     justify-content: center;
     position: relative;
-    padding: 20px;
+    padding: 0px;
     overflow: hidden;
+    background: #f1f5f9;
 }
 
 .industry-badge {
@@ -156,7 +159,7 @@ body {
 /* Placeholder Icon Styling */
 .placeholder {
     font-size: 4rem;
-    display: flex;
+    display: none !important;
     align-items: center;
     justify-content: center;
     opacity: 0.8;
@@ -249,3 +252,4 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 0 0 12px 0; }
     .title { font-size: 1.8rem; }
     .page-header { padding: 0 10px; }
 }
+
